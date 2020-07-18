@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 	}
 }
 
-// This is the StartPage widget, which includes a simple "New Game" button.
+// This is the StartPage widget, which includes a "New Game" and "Reset Statistics" button.
 class StartPage extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
@@ -82,6 +82,7 @@ class Game extends StatefulWidget {
 	_GameState createState() => _GameState();
 }
 
+//Since this is a stateful widget, the _GameState class monitors the state of the board.
 class _GameState extends State<Game> {
 	List<int> boardState;
 	int player;
@@ -156,7 +157,17 @@ class _GameState extends State<Game> {
 							child: GridView.count(
 								crossAxisCount: 3,
 								children: List.generate(9, (index) {
-									return TicTacToeTile(index: index, tapFunction: onTileTap, tileName: getSymbol(index),);
+									String name = "";
+									if (boardState[index] == 1) {
+										name = "X";
+									}
+									else if (boardState[index] == 2){
+										name = "O";
+									}
+									else {
+										name = "";
+									}
+									return TicTacToeTile(index: index, tapFunction: onTileTap, tileName: name);
 								}),
 							)
 						)
@@ -189,23 +200,6 @@ class _GameState extends State<Game> {
 		);
 	}
 
-	//Depending on the value passed into the function, either "X", "O", or nothing is returned.
-	//If there is a problem, an exclamation point is returned.
-	String getSymbol(int index) {
-		if (boardState[index] == 0) {
-			return "";
-		}
-		else if (boardState[index] == 1) {
-			return "X";
-		}
-		else if (boardState[index] == 2){
-			return "O";
-		}
-		else {
-			return "!";
-		}
-	}
-
 	//This function is run when a tile is tapped. 
 	//It updates the value of the tile and checks the board for any possible win/draw.
 	void onTileTap(int index) {
@@ -214,35 +208,37 @@ class _GameState extends State<Game> {
 
 			if (player == 1) {
 				player = 2;
-				checkBoard();
+				checkWin();
+				checkDraw();
 			}
 			else if (player == 2) {
 				player = 1;
-				checkBoard();
-			}
-			else {
-
+				checkWin();
+				checkDraw();
 			}
 		});
 	}
 
 	//This function checks the board to see if there is a win or draw present.
-	void checkBoard() {
+	void checkWin() {
 		for (int i = 0; i < winConditions.length; i++) {
 			if (boardState[winConditions[i][0]] == boardState[winConditions[i][1]] && boardState[winConditions[i][1]] == boardState[winConditions[i][2]] && boardState[winConditions[i][1]] != 0) {
-				String winner = "";
+				String winner = "", nextFirst = "";
 				if (boardState[winConditions[i][0]] == 1) {
 					xWins += 1;
 					winner = "X";
+					nextFirst = "O";
 				}
 				else if (boardState[winConditions[i][0]] == 2) {
 					oWins += 1;
 					winner = "O";
+					nextFirst = "X";
 				}
 				showDialog(
 					context: context,
 					builder: (BuildContext context) => new CupertinoAlertDialog(
 						title: Text("Player $winner Wins!"),
+						content: Text("Player $nextFirst will go first next time."),
 						actions: <Widget>[
 							CupertinoDialogAction(
 								isDefaultAction: true,
@@ -252,10 +248,15 @@ class _GameState extends State<Game> {
 						],
 					),
 				);
+
+				//Resets board
 				boardState = List.filled(9, 0, growable: false);
 			}
 		}
+	}
 
+	void checkDraw() {
+		//Counts the number of empty squares
 		int emptyCount = 0;
 		for (int tile in boardState) {
 			if (tile == 0) {
@@ -263,11 +264,13 @@ class _GameState extends State<Game> {
 			}
 		}
 
+		//If the board is full, call a draw
 		if (emptyCount == 0) {
 			showDialog(
 				context: context,
 				builder: (BuildContext context) => new CupertinoAlertDialog(
-					title: Text("Draw"),
+					title: Text("Draw!"),
+					content: Text("Better luck next time!"),
 					actions: <Widget>[
 						CupertinoDialogAction(
 							isDefaultAction: true,
@@ -277,6 +280,8 @@ class _GameState extends State<Game> {
 					],
 				),
 			);
+
+			//Resets board
 			boardState = List.filled(9, 0, growable: false);
 		}
 	}
