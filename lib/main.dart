@@ -194,7 +194,7 @@ class _GameState extends State<Game> {
 	}
 
 	//This function is run when a tile is tapped. 
-	//It updates the value of the tile and checks the board for any possible win/draw.
+	//It updates the value of the tile and checks the board for any possible win or draw.
 	void onTileTap(int index) {
 		setState(() {
 			boardState[index] = player;
@@ -219,9 +219,9 @@ class _GameState extends State<Game> {
 
 		for (int i = 0; i < winConditions.length; i++) {
 			//Checks current tile values against a list of possible win conditions
+			//Updates the board if a possible match is detected
 			if (boardState[winConditions[i][0]] == boardState[winConditions[i][1]] && boardState[winConditions[i][1]] == boardState[winConditions[i][2]] && boardState[winConditions[i][1]] != 0) {
 				String winner = "", nextFirst = "";
-				//Updates the board if a possible match is detected
 				if (boardState[winConditions[i][0]] == 1) {
 					xWins += 1;
 					winner = "X";
@@ -253,7 +253,7 @@ class _GameState extends State<Game> {
 		}
 	}
 
-	//This function checks the board to see if there is a win present.
+	//This function checks the board to see if there is a draw present.
 	void checkDraw() {
 		//Counts the number of empty squares
 		int emptyCount = 0;
