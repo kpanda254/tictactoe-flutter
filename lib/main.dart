@@ -1,18 +1,14 @@
-// Copyright 2018 The Flutter team. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(TicTacToeApp());
 
 int oWins = 0;
 int xWins = 0; 
 
 // This is the main app widget, which immediately opens the StartPage widget.
-class MyApp extends StatelessWidget {
+class TicTacToeApp extends StatelessWidget {
 	@override
 	Widget build(BuildContext context) {
 		SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -86,9 +82,6 @@ class Game extends StatefulWidget {
 class _GameState extends State<Game> {
 	List<int> boardState;
 	int player;
-
-	//List of tile combinations that are wins
-	List<List<int>> winConditions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 
 	//Starts the game by setting all 9 tiles to be empty
 	@override
@@ -219,11 +212,16 @@ class _GameState extends State<Game> {
 		});
 	}
 
-	//This function checks the board to see if there is a win or draw present.
+	//This function checks the board to see if there is a win present.
 	void checkWin() {
+		//List of tile combinations that are wins
+		List<List<int>> winConditions = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+
 		for (int i = 0; i < winConditions.length; i++) {
+			//Checks current tile values against a list of possible win conditions
 			if (boardState[winConditions[i][0]] == boardState[winConditions[i][1]] && boardState[winConditions[i][1]] == boardState[winConditions[i][2]] && boardState[winConditions[i][1]] != 0) {
 				String winner = "", nextFirst = "";
+				//Updates the board if a possible match is detected
 				if (boardState[winConditions[i][0]] == 1) {
 					xWins += 1;
 					winner = "X";
@@ -255,6 +253,7 @@ class _GameState extends State<Game> {
 		}
 	}
 
+	//This function checks the board to see if there is a win present.
 	void checkDraw() {
 		//Counts the number of empty squares
 		int emptyCount = 0;
@@ -287,7 +286,7 @@ class _GameState extends State<Game> {
 	}
 }
 
-//This class includes the informatino for the tile and grid.
+//This class includes the information for the tile and grid.
 class TicTacToeTile extends StatelessWidget {
 	final int index;
 	final String tileName;
@@ -296,64 +295,64 @@ class TicTacToeTile extends StatelessWidget {
 	//Constructor
 	TicTacToeTile({this.index, this.tapFunction, this.tileName});
 
-	//Calls designated onTap() function when the tile is tapped.
+	//Calls tapFunction(), which was passed in on creation of the tile.
 	void tileTapped() {
 		if (tileName == "") {
 			tapFunction(index);
 		}
 	}
 
-	//This sets the locations of the grid markers.
-	Border getBorderLayout() {
+	//Tile layout information
+	@override
+	Widget build(BuildContext context) {
+		Border borderLayout;
+		//Depending on the tile, a specific combination of bold border lines is assigned
 		if (index == 0) {
 			//Top Left
-			return Border(bottom: BorderSide(width: 0.5), right: BorderSide(width: 0.5));
+			borderLayout = Border(bottom: BorderSide(width: 0.5), right: BorderSide(width: 0.5));
 		}
 		else if (index == 1) {
 			//Top Center
-			return Border(left: BorderSide(width: 0.5), bottom: BorderSide(width: 0.5), right: BorderSide(width: 0.5));
+			borderLayout = Border(left: BorderSide(width: 0.5), bottom: BorderSide(width: 0.5), right: BorderSide(width: 0.5));
 		}
 		else if (index == 2) {
 			//Top Right
-			return Border(left: BorderSide(width: 0.5), bottom: BorderSide(width: 0.5));
+			borderLayout = Border(left: BorderSide(width: 0.5), bottom: BorderSide(width: 0.5));
 		}
 		else if (index == 3) {
 			//Center Left
-			return Border(bottom: BorderSide(width: 0.5), right: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
+			borderLayout = Border(bottom: BorderSide(width: 0.5), right: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
 		}
 		else if (index == 4) {
 			//Center
-			return Border(left: BorderSide(width: 0.5), bottom: BorderSide(width: 0.5), right: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
+			borderLayout = Border(left: BorderSide(width: 0.5), bottom: BorderSide(width: 0.5), right: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
 		}
 		else if (index == 5) {
 			//Center Right
-			return Border(left: BorderSide(width: 0.5), bottom: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
+			borderLayout = Border(left: BorderSide(width: 0.5), bottom: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
 		}
 		else if (index == 6) {
 			//Bottom Left
-			return Border(right: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
+			borderLayout = Border(right: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
 		}
 		else if (index == 7) {
 			//Bottom Center
-			return Border(left: BorderSide(width: 0.5), top: BorderSide(width: 0.5), right: BorderSide(width: 0.5));
+			borderLayout = Border(left: BorderSide(width: 0.5), top: BorderSide(width: 0.5), right: BorderSide(width: 0.5));
 		}
 		else if (index == 8) {
 			//Bottom Right
-			return Border(left: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
+			borderLayout = Border(left: BorderSide(width: 0.5), top: BorderSide(width: 0.5));
 		}
 		else {
-			return Border.all();
+			borderLayout = Border.all();
 		}
-	}
 
-	@override
-	Widget build(BuildContext context) {
 		return GestureDetector(
 				onTap: tileTapped,
 				child: Container(
 					margin: null,
 					decoration: BoxDecoration(
-						border: getBorderLayout()
+						border: borderLayout,
 					),
 					child: Center(
 						child: Text(
